@@ -118,6 +118,8 @@ ReloadListMixin, {
   */
   colsConfigMenu: service(),
 
+  store: service(),
+
   /**
     This hook is the first of the route entry validation hooks called when an attempt is made to transition into a route or one of its children.
     [More info](https://www.emberjs.com/api/ember/release/classes/Route/methods/beforeModel?anchor=beforeModel).
@@ -129,16 +131,17 @@ ReloadListMixin, {
   beforeModel(transition) {
     this._super(...arguments);
 
-    if (!isNone(transition.queryParams.parentRoute)) {
-      let thisRouteName = transition.queryParams.parentRoute;
-      let thisRecordId = transition.queryParams.parentRouteRecordId;
+    let to = transition.to;
+    if (!isNone(to.queryParams.parentRoute)) {
+      let thisRouteName = to.queryParams.parentRoute;
+      let thisRecordId = to.queryParams.parentRouteRecordId;
       if (!isNone(thisRouteName)) {
         this.set('parentRoute', thisRouteName);
         this.set('parentRouteRecordId', thisRecordId);
       }
     }
 
-    let webPage = transition.targetName;
+    let webPage = to.name;
     let newSuffix = this.get('newSuffix');
     if (!isBlank(newSuffix) && webPage.substr(webPage.length - newSuffix.length) === newSuffix) {
       webPage = webPage.substr(0, webPage.length - newSuffix.length);
@@ -159,7 +162,7 @@ ReloadListMixin, {
           break;
         default:
           assert('Component description ' + 'developerUserSettings.' + componentName +
-            'in /app/routes/' + transition.targetName + '.js must have types object or string', false);
+            'in /app/routes/' + to.name + '.js must have types object or string', false);
       }
     }
 
@@ -179,7 +182,8 @@ ReloadListMixin, {
   model(params, transition) {
     this._super.apply(this, arguments);
 
-    let modelName = transition.queryParams.modelName || this.get('modelName');
+    let to = transition.to;
+    let modelName = to.queryParams.modelName || this.get('modelName');
     let modelProjName = this.get('modelProjection');
 
     // Get data from service in order to decide if it is necessary to reload data or not.

@@ -50,8 +50,9 @@ export default EditFormRoute.extend({
     @param {Object} transition
    */
   model(params, transition) {
-    let modelName = transition.queryParams.modelName || this.modelName;
-    let prototypeId = transition.queryParams.prototypeId;
+    let to = transition.to;
+    let modelName = to.queryParams.modelName || this.modelName;
+    let prototypeId = to.queryParams.prototypeId;
     let store = this.get('store');
 
     if (isNone(prototypeId))
@@ -79,7 +80,7 @@ export default EditFormRoute.extend({
     let promise = prototype.copy(this.get('prototypeProjection'));
     return promise.then(record => {
       if (isNone(record)) {
-        transition.queryParams.prototypeId = undefined;
+        to.queryParams.prototypeId = undefined;
         return this.model(...arguments);
       }
 

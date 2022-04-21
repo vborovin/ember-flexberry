@@ -1506,7 +1506,10 @@ export default FlexberryBaseComponent.extend(
     For more information see [willDestroy](https://emberjs.com/api/ember/release/classes/Component#method_willDestroy) method of [Component](https://emberjs.com/api/ember/release/classes/Component).
   */
   willDestroy() {
-    this.removeObserver('content.[]', this, this._contentDidChangeProxy);
+    let searchForContentChange = this.get('searchForContentChange');
+    if (searchForContentChange) {
+      this.removeObserver('content.[]', this, this._contentDidChangeProxy);
+    }
 
     this.get('objectlistviewEventsService').off('olvAddRow', this, this._addRow);
     this.get('objectlistviewEventsService').off('olvDeleteRows', this, this._deleteRows);

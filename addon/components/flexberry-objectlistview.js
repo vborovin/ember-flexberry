@@ -1465,6 +1465,12 @@ export default FlexberryBaseComponent.extend({
   */
   beforeDeleteAllRecords: undefined,
 
+  onSetMenuWidth(componentName, tableWidth, containerWidth) {
+    if (componentName === this.get('componentName') && (!this.get('inHierarchicalMode') || this.get('hierarchyPaging'))) {
+      this._setMenuWidth(tableWidth, containerWidth);
+    }
+  },
+
   /**
     An overridable method called when objects are instantiated.
     For more information see [init](https://emberjs.com/api/ember/release/classes/EmberObject/methods/init?anchor=init) method of [EmberObject](https://emberjs.com/api/ember/release/classes/EmberObject).
@@ -1484,7 +1490,7 @@ export default FlexberryBaseComponent.extend({
         let model = this.get('store').modelFor(modelName);
         let relationships = get(model, 'relationships');
         let hierarchicalrelationships = relationships.get(modelName);
-        if (hierarchicalrelationships.length === 1) {
+        if (hierarchicalrelationships && hierarchicalrelationships.length === 1) {
           let hierarchicalAttribute = hierarchicalrelationships[0].name;
           this.send('availableHierarchicalMode', hierarchicalAttribute);
         }
@@ -1493,11 +1499,7 @@ export default FlexberryBaseComponent.extend({
 
     let eventsBus = this.get('eventsBus');
     if (eventsBus) {
-      eventsBus.on('setMenuWidth', (componentName, tableWidth, containerWidth) => {
-        if (componentName === this.get('componentName') && (!this.get('inHierarchicalMode') || this.get('hierarchyPaging'))) {
-          this._setMenuWidth(tableWidth, containerWidth);
-        }
-      });
+      eventsBus.on('setMenuWidth', this.onSetMenuWidth);
     }
 
     this.set('cellComponent', {
@@ -1530,7 +1532,7 @@ export default FlexberryBaseComponent.extend({
 
     let eventsBus = this.get('eventsBus');
     if (eventsBus) {
-      eventsBus.off('setMenuWidth');
+      eventsBus.off('setMenuWidth', this.onSetMenuWidth);
     }
   },
 
@@ -1582,7 +1584,7 @@ export default FlexberryBaseComponent.extend({
 
     // Using scrollWidth, because Internet Explorer don't receive correct value for this element with .width().
     let pages = this.$('.ui.secondary.menu .ui.basic.buttons')[0];
-    if (tableWidth < pages.scrollWidth) {
+    if (pages && tableWidth < pages.scrollWidth) {
       tableWidth = pages.scrollWidth + 75;
     }
 

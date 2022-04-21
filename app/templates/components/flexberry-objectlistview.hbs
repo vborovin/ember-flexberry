@@ -108,6 +108,7 @@
   overflowedComponents=overflowedComponents
   customParameters=customParameters
   fixedHeader=fixedHeader
+  currentController=currentController
 }}
 {{#if (or (not inHierarchicalMode) hierarchyPaging)}}
   <div class="ui secondary menu no-margin nav-bar">
@@ -144,7 +145,7 @@
         enter=(action 'searchPageButtonAction' this.attrs.gotoPage)
       }}
       {{!-- TODO: I still do not understand why, but without this, ~~in the Ember 2.x version,~~ the form submitting is faster than processing the `enter` event. --}}
-      {{input classNames=(array "hidden")}}
+      {{input classNames=(make-array "hidden")}}
       {{#if searchPageValue}}
         <button
           type="button"
